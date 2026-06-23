@@ -2,6 +2,8 @@ from algorithms.graph_builder import GraphBuilder
 
 from algorithms.dijkstra import Dijkstra
 
+from algorithms.dfs import DFS
+
 
 def main():
 
@@ -9,9 +11,11 @@ def main():
 
     graph = builder.build_graph()
 
-    algorithm = Dijkstra(graph)
+    dijkstra = Dijkstra(graph)
 
-    path, distance = algorithm.find_shortest_path(
+    dfs = DFS(graph)
+
+    path, distance = dijkstra.find_shortest_path(
 
         "Hyderabad",
 
@@ -21,7 +25,7 @@ def main():
 
     print()
 
-    print("Shortest Path:")
+    print("Shortest Path")
 
     print(
 
@@ -36,6 +40,26 @@ def main():
         f"Distance: {distance} km"
 
     )
+
+    print()
+
+    print("Alternative Routes")
+
+    all_routes = dfs.find_all_routes(
+
+        "Hyderabad",
+
+        "Chennai"
+
+    )
+
+    for route in all_routes:
+
+        print(
+
+            " -> ".join(route)
+
+        )
 
 
 if __name__ == "__main__":
