@@ -1,0 +1,41 @@
+[
+    {
+        "city_id": 1,
+        "name": "Hyderabad",
+        "state": "Telangana",
+        "latitude": 17.3850,
+        "longitude": 78.4867
+    },
+
+    {
+        "city_id": 2,
+        "name": "Vijayawada",
+        "state": "Andhra Pradesh",
+        "latitude": 16.5062,
+        "longitude": 80.6480
+    },
+
+    {
+        "city_id": 3,
+        "name": "Bangalore",
+        "state": "Karnataka",
+        "latitude": 12.9716,
+        "longitude": 77.5946
+    },
+
+    {
+        "city_id": 4,
+        "name": "Chennai",
+        "state": "Tamil Nadu",
+        "latitude": 13.0827,
+        "longitude": 80.2707
+    },
+
+    {
+        "city_id": 5,
+        "name": "Mumbai",
+        "state": "Maharashtra",
+        "latitude": 19.0760,
+        "longitude": 72.8777
+    }
+]

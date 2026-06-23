@@ -1,0 +1,25 @@
+[
+    {
+        "transport_type": "Bus",
+
+        "average_speed": 60,
+
+        "cost_per_km": 2
+    },
+
+    {
+        "transport_type": "Train",
+
+        "average_speed": 90,
+
+        "cost_per_km": 1.5
+    },
+
+    {
+        "transport_type": "Flight",
+
+        "average_speed": 700,
+
+        "cost_per_km": 8
+    }
+]
