@@ -1,67 +1,30 @@
-from algorithms.graph_builder import GraphBuilder
-
-from algorithms.dijkstra import Dijkstra
-
-from algorithms.dfs import DFS
+from models.trip_request import TripRequest
+from services.application_controller import ApplicationController
 
 
 def main():
+    controller = ApplicationController()
 
-    builder = GraphBuilder()
-
-    graph = builder.build_graph()
-
-    dijkstra = Dijkstra(graph)
-
-    dfs = DFS(graph)
-
-    path, distance = dijkstra.find_shortest_path(
-
-        "Hyderabad",
-
-        "Chennai"
-
+    request = TripRequest(
+        source="Hyderabad",
+        destination="Chennai",
+        preference="fastest"
     )
 
-    print()
+    response = controller.plan_trip(request)
 
-    print("Shortest Path")
+    print("\n===== SMART TRAVEL PLANNING SYSTEM =====")
 
-    print(
+    print("\nShortest Route")
+    print(" -> ".join(response.shortest_path))
 
-        " -> ".join(path)
+    print(f"\nDistance : {response.total_distance} km")
 
-    )
+    print("\nAlternative Routes")
 
-    print()
-
-    print(
-
-        f"Distance: {distance} km"
-
-    )
-
-    print()
-
-    print("Alternative Routes")
-
-    all_routes = dfs.find_all_routes(
-
-        "Hyderabad",
-
-        "Chennai"
-
-    )
-
-    for route in all_routes:
-
-        print(
-
-            " -> ".join(route)
-
-        )
+    for route in response.alternative_routes:
+        print(" -> ".join(route))
 
 
 if __name__ == "__main__":
-
     main()
