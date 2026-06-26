@@ -3,32 +3,23 @@
 Smart Travel Planning System
 Module : Metrics Service
 Author : Nikki
-
-Description:
-Calculates travel-related metrics such as
-estimated travel time, estimated cost,
-carbon emission and route score.
-
-Future Enhancements:
-- Dynamic pricing
-- Live fuel prices
-- Weather impact
-- Traffic analysis
 ==================================================
 """
 
 import logging
 
+from models.travel_metrics import TravelMetrics
+
 
 class MetricsService:
     """
-    Calculates various travel metrics.
+    Responsible for calculating all travel-related metrics.
     """
 
     def __init__(self):
+
         self.logger = logging.getLogger(__name__)
 
-        # Average Speeds (km/hr)
         self.average_speed = {
             "bus": 55,
             "train": 80,
@@ -36,7 +27,6 @@ class MetricsService:
             "any": 65
         }
 
-        # Cost Per KM (₹)
         self.cost_per_km = {
             "bus": 2.2,
             "train": 1.4,
@@ -44,7 +34,6 @@ class MetricsService:
             "any": 2.5
         }
 
-        # CO₂ Emission (kg/km)
         self.co2_per_km = {
             "bus": 0.09,
             "train": 0.04,
@@ -56,9 +45,9 @@ class MetricsService:
         self,
         distance: float,
         transport_mode: str
-    ) -> dict:
+    ) -> TravelMetrics:
         """
-        Returns all travel metrics.
+        Calculates travel metrics for a route.
         """
 
         self.logger.info(
@@ -102,15 +91,15 @@ class MetricsService:
         )
 
         self.logger.info(
-            "Travel metrics calculated successfully."
+            "Metrics calculated successfully."
         )
 
-        return {
-            "estimated_time": estimated_time,
-            "estimated_cost": estimated_cost,
-            "carbon_emission": carbon_emission,
-            "route_score": route_score
-        }
+        return TravelMetrics(
+            estimated_time=estimated_time,
+            estimated_cost=estimated_cost,
+            carbon_emission=carbon_emission,
+            route_score=route_score
+        )
 
     def calculate_route_score(
         self,
@@ -119,9 +108,7 @@ class MetricsService:
         cost: float
     ) -> float:
         """
-        Calculates a simple route score.
-
-        Higher score means a better route.
+        Calculates an overall score for the route.
         """
 
         score = 100
