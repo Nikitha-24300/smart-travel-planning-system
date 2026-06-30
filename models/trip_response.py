@@ -17,40 +17,40 @@ class TripResponse:
     """
     Represents the complete response returned after
     planning a trip.
-
-    This model is passed from the Service Layer
-    back to the Presentation Layer.
     """
 
-    # Best route returned by Dijkstra
+    # Best route
     shortest_path: List[str]
 
-    # Total distance (km)
+    # Total distance (Graph distance)
     total_distance: float
 
-    # Alternative routes returned by DFS
+    # Alternative routes
     alternative_routes: List[List[str]] = field(default_factory=list)
 
-    # Travel statistics
+    # Calculated travel metrics
     metrics: TravelMetrics | None = None
 
-    # Response information
+    # -------- Milestone 5 --------
+
+    # Weather information returned by Weather API
+    weather: dict | None = None
+
+    # Google Maps information
+    distance_api: dict | None = None
+
+    # Traffic multiplier
+    traffic_factor: float = 1.0
+
+    # -----------------------------
+
     status: str = "SUCCESS"
     message: str = ""
 
     def has_alternatives(self) -> bool:
-        """
-        Returns True if alternative routes exist.
-        """
-
         return len(self.alternative_routes) > 0
 
     def number_of_routes(self) -> int:
-        """
-        Returns total number of routes including
-        the shortest route.
-        """
-
         return 1 + len(self.alternative_routes)
 
     def __str__(self) -> str:
@@ -59,5 +59,6 @@ class TripResponse:
             f"TripResponse("
             f"path={self.shortest_path}, "
             f"distance={self.total_distance}, "
-            f"metrics={self.metrics})"
+            f"weather={self.weather}, "
+            f"traffic={self.traffic_factor})"
         )

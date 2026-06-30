@@ -1,22 +1,18 @@
 import json
-
 from pathlib import Path
 
 
 class GraphBuilder:
 
     def __init__(self):
-
         self.graph = {}
 
     def load_routes(self):
 
         project_root = Path(__file__).resolve().parent.parent
-
         routes_file = project_root / "data" / "routes.json"
 
         with open(routes_file, "r", encoding="utf-8") as file:
-
             routes = json.load(file)
 
         return routes
@@ -28,39 +24,30 @@ class GraphBuilder:
         for route in routes:
 
             source = route["source"]
-
             destination = route["destination"]
 
-            distance = route["distance"]
+            # NEW multi-weight structure
+            edge_data = {
+                "distance": route["distance"],
+                "duration": route["duration"],
+                "cost": route["cost"]
+            }
 
             if source not in self.graph:
-
                 self.graph[source] = []
 
             if destination not in self.graph:
-
                 self.graph[destination] = []
 
-            self.graph[source].append(
-
-                (destination, distance)
-
-            )
-
-            self.graph[destination].append(
-
-                (source, distance)
-
-            )
+            # bidirectional graph
+            self.graph[source].append((destination, edge_data))
+            self.graph[destination].append((source, edge_data))
 
         return self.graph
 
     def display_graph(self):
 
         for city, connections in self.graph.items():
-
-            print()
-
-            print(city)
-
-            print(connections)
+            print("\n", city)
+            for conn in connections:
+                print("   ", conn)

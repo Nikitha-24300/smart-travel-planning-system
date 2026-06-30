@@ -2,59 +2,36 @@
     {
         "source": "Hyderabad",
         "destination": "Vijayawada",
-
         "distance": 275,
-
         "duration": 5,
-
         "cost": 500
     },
-
     {
         "source": "Hyderabad",
-
         "destination": "Bangalore",
-
         "distance": 570,
-
         "duration": 9,
-
         "cost": 900
     },
-
     {
         "source": "Vijayawada",
-
         "destination": "Chennai",
-
         "distance": 450,
-
         "duration": 8,
-
         "cost": 800
     },
-
     {
         "source": "Bangalore",
-
         "destination": "Chennai",
-
         "distance": 350,
-
         "duration": 6,
-
         "cost": 700
     },
-
     {
         "source": "Mumbai",
-
         "destination": "Hyderabad",
-
         "distance": 710,
-
         "duration": 12,
-
         "cost": 1400
     }
 ]
