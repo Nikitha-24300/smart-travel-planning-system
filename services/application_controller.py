@@ -1,83 +1,68 @@
 """
 ==================================================
 Smart Travel Planning System
-Module: Application Controller
-Author: Nikki
-
-Description:
-Acts as the entry point to the application's
-business layer and handles DB + external APIs.
+Module: Application Controller (FIXED MILESTONE 6)
 ==================================================
 """
 
 import logging
 
+from database.repository import TripRepository
+
 from models.trip_request import TripRequest
 from models.trip_response import TripResponse
 
 from services.route_optimizer import RouteOptimizer
+from services.travel_intelligence_service import TravelIntelligenceService
+from services.budget_planner import BudgetPlanner
+
 from validation.trip_validator import TripValidator
-
-# DATABASE
-from database.repository import TripRepository
-
-# EXTERNAL SERVICES (Milestone 5)
-from services.external.weather_service import WeatherService
-from services.external.maps_service import MapsService
-from services.external.traffic_service import TrafficService
 
 
 class ApplicationController:
-    """
-    Main entry point for business logic layer.
-    """
 
     def __init__(self):
 
         self.logger = logging.getLogger(__name__)
 
-        # Core system
-        self.optimizer = RouteOptimizer()
         self.validator = TripValidator()
-
-        # Database layer
+        self.optimizer = RouteOptimizer()
+        self.intelligence = TravelIntelligenceService()
+        self.budget_planner = BudgetPlanner()
         self.repo = TripRepository()
-
-        # External APIs (Milestone 5)
-        self.weather = WeatherService()
-        self.maps = MapsService()
-        self.traffic = TrafficService()
 
     def plan_trip(self, request: TripRequest) -> TripResponse:
 
         self.logger.info(
             "Trip request received: %s -> %s",
             request.source,
-            request.destination,
-        )
-
-        # STEP 1: Validate input
-        self.validator.validate(request)
-
-        # STEP 2: Compute best route
-        response = self.optimizer.optimize(request)
-
-        # STEP 3: External API enrichment (NEW)
-        weather_info = self.weather.get_weather(request.source)
-        distance_info = self.maps.get_distance(
-            request.source,
             request.destination
         )
-        traffic_factor = self.traffic.get_traffic_factor(
-            request.source
-        )
 
-        # STEP 4: Attach extra intelligence (optional but powerful)
-        response.weather = weather_info
-        response.distance_api = distance_info
-        response.traffic_factor = traffic_factor
+        # 1. Validate
+        self.validator.validate(request)
 
-        # STEP 5: Save to database
+        # 2. Route optimization
+        response = self.optimizer.optimize(request)
+
+        # 3. Intelligence metrics
+        response.metrics = self.intelligence.generate_metrics(request)
+
+        # 4. Budget analysis (SAFE + CONSISTENT)
+        try:
+            response.budget = self.budget_planner.analyze(
+                max_budget=getattr(request, "max_budget", None),
+                estimated_cost=response.metrics.estimated_cost,
+                transport_mode=getattr(request, "transport_mode", "any")
+            )
+
+            self.logger.info("Budget Analysis: %s", response.budget.status)
+
+        except Exception as e:
+            self.logger.error("Budget module failed: %s", str(e))
+            response.budget = None
+
+        # 5. Save to DB (safe)
         try:
             self.repo.save_trip({
                 "source": request.source,
@@ -85,20 +70,19 @@ class ApplicationController:
                 "route": response.shortest_path,
                 "total_distance": response.total_distance,
                 "preference": request.preference,
-                "status": response.status
+                "status": response.status,
+                "budget_status": getattr(response.budget, "status", None)
             })
 
-            self.logger.info("Trip saved to database successfully.")
+            self.logger.info("Trip saved successfully.")
 
         except Exception as e:
             self.logger.error("Database save failed: %s", str(e))
 
-        self.logger.info("Trip planned successfully.")
-
         return response
 
-    def health_check(self) -> str:
+    def health_check(self):
         return "Application Ready"
 
-    def version(self) -> str:
-        return "2.0.0"
+    def version(self):
+        return "2.1.0"

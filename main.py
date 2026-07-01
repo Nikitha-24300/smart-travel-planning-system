@@ -1,8 +1,7 @@
 """
 ==================================================
 Smart Travel Planning System
-Author : Nikki
-Main Entry Point
+Main Entry Point (FIXED)
 ==================================================
 """
 
@@ -13,13 +12,9 @@ from ui.console_ui import ConsoleUI
 
 
 def display_trip_result(response):
-    """
-    Displays the planned trip in a professional format.
-    """
 
-    print("\n")
-    print("=" * 70)
-    print("                 SMART TRAVEL PLANNING SYSTEM")
+    print("\n" + "=" * 70)
+    print("SMART TRAVEL PLANNING SYSTEM")
     print("=" * 70)
 
     print("\nTRIP SUMMARY")
@@ -28,56 +23,66 @@ def display_trip_result(response):
     print("\nBest Route")
     print("   " + " -> ".join(response.shortest_path))
 
-    print(f"\nTotal Distance : {response.total_distance:.2f} km")
+    # DISTANCE
+    print("\nDISTANCE")
+    print("-" * 70)
 
+    print(f"Graph Distance      : {response.total_distance:.2f} km")
+
+    if response.metrics:
+        print(f"Road Distance       : {response.metrics.real_distance:.2f} km")
+
+    # METRICS
     if response.metrics:
 
         print("\nTRAVEL METRICS")
         print("-" * 70)
 
-        print(
-            f"Estimated Time      : "
-            f"{response.metrics.estimated_time:.2f} Hours"
-        )
+        print(f"Estimated Time      : {response.metrics.estimated_time:.2f} Hours")
+        print(f"Real Drive Time     : {response.metrics.real_duration:.2f} Hours")
+        print(f"Estimated Cost      : ₹{response.metrics.estimated_cost:.2f}")
+        print(f"Carbon Emission     : {response.metrics.carbon_emission:.2f} kg CO₂")
+        print(f"Route Score         : {response.metrics.route_score:.2f}/100")
 
-        print(
-            f"Estimated Cost      : "
-            f"₹{response.metrics.estimated_cost:.2f}"
-        )
+        print("\nWEATHER")
+        print("-" * 70)
 
-        print(
-            f"Carbon Emission     : "
-            f"{response.metrics.carbon_emission:.2f} kg CO₂"
-        )
+        print(f"Weather             : {response.metrics.weather}")
+        print(f"Temperature         : {response.metrics.temperature:.1f} °C")
 
-        print(
-            f"Route Score         : "
-            f"{response.metrics.route_score:.2f}/100"
-        )
+        print("\nTRAFFIC")
+        print("-" * 70)
 
+        print(f"Traffic Status      : {response.metrics.traffic_status}")
+        print(f"Traffic Factor      : {response.metrics.traffic_factor:.2f}")
+
+    # BUDGET (SAFE FIX)
+    if getattr(response, "budget", None):
+
+        print("\nBUDGET ANALYSIS")
+        print("-" * 70)
+
+        print(f"Budget              : ₹{response.budget.max_budget}")
+        print(f"Estimated Cost      : ₹{response.budget.estimated_cost}")
+        print(f"Status              : {response.budget.status}")
+        print(f"Exceeded By         : ₹{response.budget.exceeded_amount}")
+
+        print("\nRecommendation")
+        print(response.budget.recommendation)
+
+    # ALTERNATIVES
     print("\nALTERNATIVE ROUTES")
     print("-" * 70)
 
-    if response.alternative_routes:
+    for i, route in enumerate(response.alternative_routes, 1):
+        print(f"{i}. {' -> '.join(route)}")
 
-        for index, route in enumerate(
-            response.alternative_routes,
-            start=1
-        ):
-            print(f"{index}. {' -> '.join(route)}")
-
-    else:
-
-        print("No alternative routes found.")
-
+    # STATUS
     print("\nSTATUS")
     print("-" * 70)
+
     print(response.status)
-
-    if response.message:
-        print(response.message)
-
-    print("=" * 70)
+    print(response.message)
 
 
 def main():
@@ -85,7 +90,6 @@ def main():
     configure_logging()
 
     controller = ApplicationController()
-
     ui = ConsoleUI()
 
     while True:
@@ -93,26 +97,18 @@ def main():
         request = ui.show_main_menu()
 
         if request is None:
-            print("\nGoodbye! Thank you for using Smart Travel Planning System.")
+            print("\nGoodbye!")
             break
 
         try:
-
             response = controller.plan_trip(request)
-
             display_trip_result(response)
 
-        except ValidationError as error:
+        except ValidationError as e:
+            print("\nValidation Error:", e)
 
-            print("\nValidation Error")
-            print("-" * 70)
-            print(error)
-
-        except Exception as error:
-
-            print("\nUnexpected Error")
-            print("-" * 70)
-            print(error)
+        except Exception as e:
+            print("\nUnexpected Error:", e)
 
 
 if __name__ == "__main__":

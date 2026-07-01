@@ -1,38 +1,45 @@
 import streamlit as st
-import sqlite3
-import pandas as pd
+import requests
+
+API_URL = "http://127.0.0.1:8000/history"
 
 
 def show_history():
 
-    st.header("📊 Trip History")
+    st.title("📜 Trip History")
 
-    conn = sqlite3.connect("travel.db")
-    cursor = conn.cursor()
+    try:
+        res = requests.get(API_URL, timeout=10)
 
-    cursor.execute("""
-        SELECT source, destination, route, total_distance, preference, status
-        FROM trips
-        ORDER BY id DESC
-    """)
+        if res.status_code != 200:
+            st.error("Failed to fetch history")
+            return
 
-    rows = cursor.fetchall()
-    conn.close()
+        data = res.json()
 
-    if not rows:
-        st.warning("No trips found.")
-        return
+        if not data:
+            st.info("No trips found yet.")
+            return
 
-    df = pd.DataFrame(
-        rows,
-        columns=[
-            "Source",
-            "Destination",
-            "Route",
-            "Distance",
-            "Preference",
-            "Status"
-        ]
-    )
+        st.success(f"Total Trips: {len(data)}")
 
-    st.dataframe(df, width="stretch", hide_index=True)
+        for i, trip in enumerate(data, 1):
+
+            with st.container():
+
+                st.markdown("---")
+
+                st.subheader(f"Trip {i}")
+
+                col1, col2, col3 = st.columns(3)
+
+                col1.metric("Source", trip.get("source"))
+                col2.metric("Destination", trip.get("destination"))
+                col3.metric("Status", trip.get("status"))
+
+                st.write("**Route:**", " → ".join(trip.get("route", [])))
+                st.write(f"Distance: {trip.get('distance')} km")
+                st.write(f"Preference: {trip.get('preference')}")
+
+    except Exception as e:
+        st.error(f"API Error: {str(e)}")

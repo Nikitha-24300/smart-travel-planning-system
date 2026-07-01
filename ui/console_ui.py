@@ -42,20 +42,41 @@ class ConsoleUI:
         print("\nEnter Trip Details")
 
         source = input("Source City : ").strip()
-
         destination = input("Destination City : ").strip()
 
+        # -----------------------------
+        # Preference Menu
+        # -----------------------------
         Menu.display_preference_menu()
 
         preference = self.get_preference(
             input("\nChoice : ").strip()
         )
 
+        # -----------------------------
+        # Transport Menu
+        # -----------------------------
         Menu.display_transport_menu()
 
         transport = self.get_transport_mode(
             input("\nChoice : ").strip()
         )
+
+        # -----------------------------
+        # NEW: Budget Input (Milestone 6)
+        # -----------------------------
+        budget_input = input(
+            "\nEnter Maximum Budget (press Enter to skip): "
+        ).strip()
+
+        if budget_input == "":
+            max_budget = None
+        else:
+            try:
+                max_budget = float(budget_input)
+            except ValueError:
+                print("Invalid budget input. Setting budget to None.")
+                max_budget = None
 
         Progress.loading()
 
@@ -63,7 +84,8 @@ class ConsoleUI:
             source=source,
             destination=destination,
             preference=preference,
-            transport_mode=transport
+            transport_mode=transport,
+            max_budget=max_budget
         )
 
     @staticmethod

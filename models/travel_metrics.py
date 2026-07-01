@@ -12,22 +12,38 @@ from dataclasses import dataclass
 @dataclass(slots=True)
 class TravelMetrics:
     """
-    Stores all calculated travel metrics.
-
-    This model is returned by MetricsService and later
-    becomes part of TripResponse.
+    Stores all travel intelligence generated for a trip.
     """
 
-    estimated_time: float
-    estimated_cost: float
-    carbon_emission: float
-    route_score: float
+    # Existing metrics
+    estimated_time: float = 0.0
+    estimated_cost: float = 0.0
+    carbon_emission: float = 0.0
+    route_score: float = 0.0
 
-    def __str__(self) -> str:
+    # Live Maps API
+    real_distance: float = 0.0
+    real_duration: float = 0.0
+
+    # Weather API
+    weather: str = "Unknown"
+    temperature: float = 0.0
+
+    # Traffic
+    traffic_factor: float = 1.0
+    traffic_status: str = "Normal"
+
+    def __str__(self):
+
         return (
             f"TravelMetrics("
-            f"time={self.estimated_time} hrs, "
-            f"cost=₹{self.estimated_cost}, "
-            f"co2={self.carbon_emission} kg, "
-            f"score={self.route_score})"
+            f"time={self.estimated_time}, "
+            f"cost={self.estimated_cost}, "
+            f"co2={self.carbon_emission}, "
+            f"score={self.route_score}, "
+            f"real_distance={self.real_distance}, "
+            f"real_duration={self.real_duration}, "
+            f"weather={self.weather}, "
+            f"temperature={self.temperature}, "
+            f"traffic={self.traffic_status})"
         )

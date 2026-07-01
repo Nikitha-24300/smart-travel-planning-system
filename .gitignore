@@ -1,9 +1,36 @@
+
+
+.pytest_cache/
+
+*.sqlite3
+
+
+# Virtual Environment
 venv/
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Environment Variables
 .env
+
+# IDE
 .vscode/
-.pytest_cache/
-*.log
-*.sqlite3
+.idea/
+
+# OS Files
 .DS_Store
+Thumbs.db
+
+# Streamlit Cache
+.streamlit/
+
+# Logs
+*.log
+
+# SQLite (optional)
+*.db
+travel.db

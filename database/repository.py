@@ -66,12 +66,24 @@ class TripRepository:
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT source, destination, route, total_distance, preference, status
-            FROM trips
-            ORDER BY id DESC
-        """)
+        SELECT source, destination, route, total_distance, preference, status
+        FROM trips
+        ORDER BY id DESC
+    """)
 
         rows = cursor.fetchall()
-
         conn.close()
-        return rows
+
+        trips = []
+
+        for r in rows:
+            trips.append({
+                "source": r[0],
+                "destination": r[1],
+                "route": r[2].split(" -> ") if r[2] else [],
+                "distance": r[3],
+                "preference": r[4],
+                "status": r[5]
+            })
+
+        return trips
