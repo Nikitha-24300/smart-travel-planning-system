@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8000/history"
+API_URL = "https://smart-travel-api-nupf.onrender.com/history"
 
 
 def show_history():

@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-HISTORY_API = "http://127.0.0.1:8000/history"
+HISTORY_API = "https://smart-travel-api-nupf.onrender.com/history"
 
 
 def show_dashboard():

@@ -4,7 +4,7 @@ from pathlib import Path
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8000/plan-trip"
+API_URL = "https://smart-travel-api-nupf.onrender.com/plan-trip"
 
 
 def load_cities():
