@@ -83,7 +83,7 @@ def show_plan_trip():
 
     st.markdown("---")
 
-    if st.button("🚀 Plan Trip", width="stretch"):
+    if st.button("🚀 Plan Trip"):
 
         payload = {
             "source": source,

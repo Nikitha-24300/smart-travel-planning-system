@@ -62,10 +62,10 @@ def show_history():
             ]
 
         st.dataframe(
-            filtered_df,
-            width="stretch",
-            hide_index=True
-        )
+    filtered_df,
+    use_container_width=True,
+    hide_index=True
+)
 
         st.download_button(
             label="📥 Download History (CSV)",

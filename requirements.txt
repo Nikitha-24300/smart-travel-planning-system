@@ -1,9 +1,17 @@
-fastapi
-uvicorn
-streamlit
-requests
-python-dotenv
-pandas
-plotly
-plotly pandas
-numpy
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+
+streamlit==1.47.1
+
+requests==2.32.4
+
+python-dotenv==1.1.1
+
+pandas==2.3.1
+plotly==6.2.0
+
+pydantic==2.11.7
+
+openrouteservice==2.3.3
+
+geopy==2.4.1

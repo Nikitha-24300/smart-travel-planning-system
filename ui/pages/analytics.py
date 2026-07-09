@@ -68,7 +68,7 @@ def show_analytics():
             title="Trip Status Distribution"
         )
 
-        st.plotly_chart(fig1, width="stretch")
+        st.plotly_chart(fig1, use_container_width=True)
 
         # ================= Preference =================
 
@@ -90,8 +90,7 @@ def show_analytics():
             title="Preferred Route Type"
         )
 
-        st.plotly_chart(fig2, width="stretch")
-
+        st.plotly_chart(fig2, use_container_width=True)
         # ================= Distance =================
 
         st.subheader("Distance of Every Trip")
@@ -112,7 +111,7 @@ def show_analytics():
             title="Trip Distance"
         )
 
-        st.plotly_chart(fig3, width="stretch")
+        st.plotly_chart(fig3, use_container_width=True)
 
         # ================= Routes =================
 
@@ -135,7 +134,7 @@ def show_analytics():
             title="Route Frequency"
         )
 
-        st.plotly_chart(fig4, width="stretch")
+        st.plotly_chart(fig4, use_container_width=True)
 
         st.markdown("---")
 
