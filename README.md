@@ -320,6 +320,22 @@ streamlit run ui/app.py
 
 ---
 
+## 🚀 Live Demo
+
+### Frontend Application
+🔗 Streamlit App:
+https://smart-travel-planning-system-jav2hsn4ckcxjg4mvmkjgw.streamlit.app/
+
+### Backend API
+🔗 FastAPI Server:
+YOUR_RENDER_URL
+
+### API Documentation
+🔗 Swagger Docs:
+[YOUR_RENDER_URL/docs](https://smart-travel-planning-system.onrender.com/docs)
+
+---
+
 # 👩‍💻 Author
 
 **Nikitha Lingapnor**
