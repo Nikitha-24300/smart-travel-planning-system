@@ -328,11 +328,11 @@ https://smart-travel-planning-system-jav2hsn4ckcxjg4mvmkjgw.streamlit.app/
 
 ### Backend API
 🔗 FastAPI Server:
-YOUR_RENDER_URL
+https://smart-travel-planning-system.onrender.com/docs
 
 ### API Documentation
 🔗 Swagger Docs:
-https://smart-travel-planning-system.onrender.com/docs
+YOUR_SWAGGER_DOC_URL
 
 ---
 
