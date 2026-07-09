@@ -99,18 +99,18 @@ Features
 
 if page == "🏠 Plan Trip":
 
-    from ui.pages.plan_trip import show_plan_trip
+    from pages.plan_trip import show_plan_trip
 
     show_plan_trip()
 
 elif page == "📜 Trip History":
 
-    from ui.pages.history import show_history
+    from pages.history import show_history
 
     show_history()
 
 elif page == "📊 Analytics":
 
-    from ui.pages.analytics import show_analytics
+    from pages.analytics import show_analytics
 
     show_analytics()
