@@ -50,7 +50,7 @@ st.markdown(
 )
 
 st.markdown(
-    "<div class='sub-title'>AI Powered Route Optimization using Graph Algorithms</div>",
+    "<div class='sub-title'>Intelligent Route Optimization using Graph Algorithms, Real-Time APIs, and Multi-Criteria Decision Making</div>",
     unsafe_allow_html=True
 )
 

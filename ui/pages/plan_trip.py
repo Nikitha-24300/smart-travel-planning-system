@@ -29,7 +29,7 @@ def show_plan_trip():
     cities = load_cities()
 
     st.title("🚆 Smart Travel Planner")
-    st.caption("Plan optimized routes using Graph Algorithms and AI.")
+    st.caption("Intelligent Route Optimization using Graph Algorithms, Real-Time APIs, and Multi-Criteria Decision Making.")
 
     st.markdown("---")
 

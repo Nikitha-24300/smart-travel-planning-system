@@ -24,4 +24,4 @@ class EcoStrategy(BaseStrategy):
         )
 
     def get_priority_label(self):
-        return "ECO"
+        return "ECO"    

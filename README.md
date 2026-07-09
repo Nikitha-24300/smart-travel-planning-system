@@ -1,6 +1,6 @@
 # 🚆 Smart Travel Planning System
 
-An AI-powered travel planning application that computes optimized travel routes between cities using graph algorithms, real-time APIs, and intelligent optimization strategies.
+An intelligent travel planning application that computes optimized travel routes between cities using graph algorithms, real-time APIs, and multi-criteria route optimization strategies.
 
 The system helps users choose the best route based on multiple preferences such as **Fastest**, **Cheapest**, **Eco-Friendly**, and **Balanced** travel while also providing travel analytics, weather information, traffic conditions, estimated cost, budget analysis, and trip history.
 
@@ -33,7 +33,7 @@ The system helps users choose the best route based on multiple preferences such 
 
 ### Programming Language
 
-* Python 3.11+
+* Python 3.11
 
 ### Backend
 
