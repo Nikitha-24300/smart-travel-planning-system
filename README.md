@@ -330,10 +330,6 @@ https://smart-travel-planning-system-jav2hsn4ckcxjg4mvmkjgw.streamlit.app/
 🔗 FastAPI Server:
 https://smart-travel-planning-system.onrender.com/docs
 
-### API Documentation
-🔗 Swagger Docs:
-YOUR_SWAGGER_DOC_URL
-
 ---
 
 # 👩‍💻 Author
