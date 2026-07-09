@@ -332,7 +332,7 @@ YOUR_RENDER_URL
 
 ### API Documentation
 🔗 Swagger Docs:
-[YOUR_RENDER_URL/docs](https://smart-travel-planning-system.onrender.com/docs)
+https://smart-travel-planning-system.onrender.com/docs
 
 ---
 
