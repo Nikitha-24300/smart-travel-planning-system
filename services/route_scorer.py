@@ -1,42 +1,87 @@
+"""
+==================================================
+Smart Travel Planning System
+Module : Route Scorer
+Version : 3.0
+Author  : Nikki
+==================================================
+"""
+
+import logging
+
+
 class RouteScorer:
     """
-    Scores routes based on selected strategy.
+    Calculates the score of a route based on the
+    selected optimization strategy.
     """
 
     def __init__(self, graph):
+
         self.graph = graph
+        self.logger = logging.getLogger(__name__)
+
+    # =====================================================
+    # PUBLIC METHOD
+    # =====================================================
 
     def score_route(self, route, strategy):
 
-        total_distance = 0
-        total_duration = 0
-        total_cost = 0
+        total_distance = 0.0
+        total_duration = 0.0
+        total_cost = 0.0
+
+        if len(route) < 2:
+            return float("inf")
 
         for i in range(len(route) - 1):
 
-            current = route[i]
-            next_node = route[i + 1]
+            current_city = route[i]
+            next_city = route[i + 1]
 
-            edge = self._get_edge(current, next_node)
+            edge = self._get_edge(current_city, next_city)
 
             if edge is None:
-                continue
+                self.logger.warning(
+                    "Missing edge: %s -> %s",
+                    current_city,
+                    next_city
+                )
+                return float("inf")
 
-            total_distance += edge["distance"]
-            total_duration += edge["duration"]
-            total_cost += edge["cost"]
+            total_distance += edge.get("distance", 0.0)
+            total_duration += edge.get("duration", 0.0)
+            total_cost += edge.get("cost", 0.0)
 
-        return strategy.calculate_score(
+        score = strategy.calculate_score(
             distance=total_distance,
             duration=total_duration,
             cost=total_cost
         )
 
-    def _get_edge(self, current, next_node):
+        self.logger.info(
+            "%s | Distance: %.2f km | Duration: %.2f hr | Cost: %.2f | Score: %.2f",
+            strategy.get_priority_label(),
+            total_distance,
+            total_duration,
+            total_cost,
+            score
+        )
 
-        for neighbor, data in self.graph[current]:
+        return round(score, 2)
 
-            if neighbor == next_node:
-                return data
+    # =====================================================
+    # PRIVATE METHODS
+    # =====================================================
+
+    def _get_edge(self, source, destination):
+
+        if source not in self.graph:
+            return None
+
+        for neighbor, edge_data in self.graph[source]:
+
+            if neighbor == destination:
+                return edge_data
 
         return None

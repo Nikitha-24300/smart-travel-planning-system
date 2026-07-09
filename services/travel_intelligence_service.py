@@ -1,12 +1,9 @@
 """
 ==================================================
 Smart Travel Planning System
-Module : Travel Intelligence Service
-Author : Nikki
-
-Description:
-Collects data from all external services and
-builds a unified TravelMetrics object.
+Travel Intelligence Service
+Version : 3.1
+Author  : Nikki
 ==================================================
 """
 
@@ -29,108 +26,237 @@ class TravelIntelligenceService:
         self.maps_service = MapsService()
         self.traffic_service = TrafficService()
 
+    # -------------------------------------------------
+    # Transport Cost (₹ / km)
+    # -------------------------------------------------
+
+    TRANSPORT_COST = {
+        "bus": 5,
+        "train": 3,
+        "flight": 12,
+        "any": 8
+    }
+
+    # -------------------------------------------------
+    # Carbon Emission (kg / km)
+    # -------------------------------------------------
+
+    CARBON_FACTOR = {
+        "bus": 0.08,
+        "train": 0.05,
+        "flight": 0.25,
+        "any": 0.12
+    }
+
+    # =====================================================
+    # MAIN
+    # =====================================================
+
     def generate_metrics(self, request):
 
         metrics = TravelMetrics()
 
-        # -----------------------------------
-        # Weather
-        # -----------------------------------
+        metrics.transport_mode = getattr(
+            request,
+            "transport_mode",
+            "any"
+        ).lower()
 
-        weather = self.weather_service.get_weather(
-            request.source
-        )
+        # =====================================================
+        # WEATHER
+        # =====================================================
 
-        if weather:
+        try:
 
-            metrics.weather = weather.get(
-                 "weather",
-                "Unknown"
+            weather = self.weather_service.get_weather(
+                request.source
             )
 
-            metrics.temperature = weather.get(
-                "temperature",
-                0.0
+            if weather:
+
+                metrics.weather = weather.get("weather", "Unknown")
+                metrics.temperature = weather.get("temperature", 0.0)
+                metrics.humidity = weather.get("humidity", 0)
+                metrics.wind_speed = weather.get("wind_speed", 0.0)
+
+        except Exception as e:
+
+            self.logger.warning("Weather API : %s", e)
+
+        # =====================================================
+        # MAPS
+        # =====================================================
+
+        try:
+
+            maps = self.maps_service.get_distance(
+                request.source,
+                request.destination
             )
 
-        # -----------------------------------
-        # Maps
-        # -----------------------------------
+            if maps:
 
-        maps = self.maps_service.get_distance(
-            request.source,
-            request.destination
-        )
+                metrics.real_distance = maps.get(
+                    "distance_km",
+                    0.0
+                )
 
-        if maps:
+                metrics.real_duration = maps.get(
+                    "duration_hr",
+                    0.0
+                )
 
-            metrics.real_distance = maps.get(
-                "distance_km",
-                0.0
-            ) or 0.0
+        except Exception as e:
 
-            metrics.real_duration = maps.get(
-                "duration_hr",
-                0.0
-            ) or 0.0
+            self.logger.warning("Maps API : %s", e)
 
-        # -----------------------------------
-        # Traffic
-        # -----------------------------------
+        # =====================================================
+        # TRAFFIC
+        # =====================================================
 
-        traffic = self.traffic_service.get_traffic_factor(
-            request.source
-        )
+        try:
 
-        metrics.traffic_factor = traffic
+            metrics.traffic_factor = self.traffic_service.get_traffic_factor(
+                request.source
+            )
 
-        if traffic <= 1.0:
+        except Exception:
 
+            metrics.traffic_factor = 1.0
+
+        factor = metrics.traffic_factor
+
+        if factor <= 1:
             metrics.traffic_status = "Light"
 
-        elif traffic <= 1.3:
-
+        elif factor <= 1.3:
             metrics.traffic_status = "Moderate"
 
-        elif traffic <= 1.6:
-
+        elif factor <= 1.6:
             metrics.traffic_status = "Heavy"
 
         else:
-
             metrics.traffic_status = "Severe"
 
-        # -----------------------------------
-        # Derived Metrics
-        # -----------------------------------
+        # =====================================================
+        # CALCULATIONS
+        # =====================================================
 
-        if metrics.real_distance:
+        distance = metrics.real_distance
+
+        if distance > 0:
+
+            cost_factor = self.TRANSPORT_COST.get(
+                metrics.transport_mode,
+                8
+            )
+
+            carbon_factor = self.CARBON_FACTOR.get(
+                metrics.transport_mode,
+                0.12
+            )
 
             metrics.estimated_cost = round(
-                metrics.real_distance * 8,
+                distance * cost_factor,
                 2
             )
 
             metrics.carbon_emission = round(
-                metrics.real_distance * 0.12,
+                distance * carbon_factor,
                 2
             )
 
             metrics.route_score = round(
                 max(
                     0,
-                    100 - (metrics.real_distance / 25)
+                    100 - (distance / 25)
                 ),
                 2
             )
 
-            if metrics.real_duration > 0:
+            metrics.route_efficiency = round(
+                max(
+                    0,
+                    100 - ((factor - 1) * 35)
+                ),
+                2
+            )
 
-                metrics.estimated_time = round(
-                    metrics.real_duration *
-                    metrics.traffic_factor,
-                    2
-                )
+        if metrics.real_duration > 0:
+
+            metrics.estimated_time = round(
+                metrics.real_duration * factor,
+                2
+            )
+
+        # =====================================================
+        # RISK LEVEL
+        # =====================================================
+
+        weather = metrics.weather.lower()
+
+        if metrics.traffic_status == "Severe":
+
+            metrics.risk_level = "High"
+
+        elif weather in [
+            "storm",
+            "thunderstorm",
+            "heavy rain"
+        ]:
+
+            metrics.risk_level = "High"
+
+        elif weather in [
+            "rain",
+            "drizzle",
+            "fog"
+        ]:
+
+            metrics.risk_level = "Medium"
+
+        else:
+
+            metrics.risk_level = "Low"
+
+        # =====================================================
+        # AI Recommendation
+        # =====================================================
+
+        tips = []
+
+        if metrics.route_score >= 90:
+            tips.append("Excellent route selected.")
+
+        elif metrics.route_score >= 70:
+            tips.append("Good route selected.")
+
+        else:
+            tips.append("Consider an alternative route.")
+
+        if metrics.traffic_status == "Heavy":
+            tips.append("Expect delays due to traffic.")
+
+        elif metrics.traffic_status == "Severe":
+            tips.append("Avoid peak hours if possible.")
+
+        if weather in [
+            "rain",
+            "storm",
+            "heavy rain"
+        ]:
+            tips.append("Carry rain protection.")
+
+        if metrics.transport_mode == "flight":
+            tips.append("Arrive at the airport 2 hours early.")
+
+        elif metrics.transport_mode == "train":
+            tips.append("Check platform information before departure.")
+
+        elif metrics.transport_mode == "bus":
+            tips.append("Reach the boarding point 15 minutes early.")
+
+        metrics.recommendation = " ".join(tips)
 
         self.logger.info(
             "Travel intelligence generated successfully."

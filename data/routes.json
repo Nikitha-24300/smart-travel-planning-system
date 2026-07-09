@@ -1,37 +1,170 @@
 [
     {
         "source": "Hyderabad",
-        "destination": "Vijayawada",
-        "distance": 275,
-        "duration": 5,
-        "cost": 500
-    },
-    {
-        "source": "Hyderabad",
         "destination": "Bangalore",
         "distance": 570,
         "duration": 9,
-        "cost": 900
+        "cost": 850
     },
     {
-        "source": "Vijayawada",
+        "source": "Hyderabad",
         "destination": "Chennai",
-        "distance": 450,
-        "duration": 8,
-        "cost": 800
+        "distance": 630,
+        "duration": 10,
+        "cost": 950
+    },
+    {
+        "source": "Hyderabad",
+        "destination": "Mumbai",
+        "distance": 710,
+        "duration": 11,
+        "cost": 1200
+    },
+    {
+        "source": "Hyderabad",
+        "destination": "Pune",
+        "distance": 560,
+        "duration": 9,
+        "cost": 900
     },
     {
         "source": "Bangalore",
         "destination": "Chennai",
         "distance": 350,
         "duration": 6,
-        "cost": 700
+        "cost": 600
+    },
+    {
+        "source": "Bangalore",
+        "destination": "Mysore",
+        "distance": 145,
+        "duration": 3,
+        "cost": 250
+    },
+    {
+        "source": "Bangalore",
+        "destination": "Goa",
+        "distance": 560,
+        "duration": 10,
+        "cost": 900
+    },
+    {
+        "source": "Chennai",
+        "destination": "Coimbatore",
+        "distance": 510,
+        "duration": 8,
+        "cost": 750
+    },
+    {
+        "source": "Chennai",
+        "destination": "Kochi",
+        "distance": 690,
+        "duration": 11,
+        "cost": 1100
     },
     {
         "source": "Mumbai",
+        "destination": "Pune",
+        "distance": 150,
+        "duration": 3,
+        "cost": 300
+    },
+    {
+        "source": "Mumbai",
+        "destination": "Ahmedabad",
+        "distance": 530,
+        "duration": 8,
+        "cost": 850
+    },
+    {
+        "source": "Ahmedabad",
+        "destination": "Jaipur",
+        "distance": 670,
+        "duration": 10,
+        "cost": 1000
+    },
+    {
+        "source": "Jaipur",
+        "destination": "Delhi",
+        "distance": 280,
+        "duration": 5,
+        "cost": 450
+    },
+    {
+        "source": "Delhi",
+        "destination": "Lucknow",
+        "distance": 555,
+        "duration": 8,
+        "cost": 850
+    },
+    {
+        "source": "Delhi",
+        "destination": "Chandigarh",
+        "distance": 250,
+        "duration": 4,
+        "cost": 400
+    },
+    {
+        "source": "Lucknow",
+        "destination": "Varanasi",
+        "distance": 320,
+        "duration": 5,
+        "cost": 500
+    },
+    {
+        "source": "Kolkata",
+        "destination": "Bhubaneswar",
+        "distance": 440,
+        "duration": 7,
+        "cost": 700
+    },
+    {
+        "source": "Bhubaneswar",
+        "destination": "Visakhapatnam",
+        "distance": 445,
+        "duration": 7,
+        "cost": 700
+    },
+    {
+        "source": "Visakhapatnam",
         "destination": "Hyderabad",
-        "distance": 710,
-        "duration": 12,
-        "cost": 1400
+        "distance": 620,
+        "duration": 10,
+        "cost": 950
+    },
+    {
+        "source": "Nagpur",
+        "destination": "Hyderabad",
+        "distance": 500,
+        "duration": 8,
+        "cost": 750
+    },
+    {
+        "source": "Nagpur",
+        "destination": "Mumbai",
+        "distance": 830,
+        "duration": 13,
+        "cost": 1300
+    },
+    {
+        "source": "Pune",
+        "destination": "Goa",
+        "distance": 450,
+        "duration": 8,
+        "cost": 700
+    },
+    {
+        "source": "Kochi",
+        "destination": "Coimbatore",
+        "distance": 190,
+        "duration": 4,
+        "cost": 350
+    },
+    {
+        "source": "Mysore",
+        "destination": "Coimbatore",
+        "distance": 200,
+        "duration": 4,
+        "cost": 350
     }
 ]

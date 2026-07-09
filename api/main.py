@@ -1,82 +1,151 @@
 """
 ==================================================
 Smart Travel Planning System
-API Layer (Milestone 6 Final Stable Version)
-Author: Nikki
+FastAPI Backend
+Version : 3.0
+Author  : Nikki
 ==================================================
 """
 
+from dataclasses import asdict, is_dataclass
 from fastapi import FastAPI
-from pydantic import BaseModel
 
 from models.trip_request import TripRequest
 from services.application_controller import ApplicationController
 
 app = FastAPI(
     title="Smart Travel Planning System",
-    version="2.2.1"
+    version="3.0.0"
 )
 
 controller = ApplicationController()
 
 
-# =========================
+# ==================================================
 # HEALTH CHECK
-# =========================
+# ==================================================
+
 @app.get("/health")
 def health():
+
     return {
         "status": "OK",
-        "system": "Smart Travel Planning System"
+        "system": "Smart Travel Planning System",
+        "version": "3.0.0"
     }
 
 
-# =========================
-# SAFE SERIALIZER (FINAL FIX)
-# =========================
-def safe_serialize(obj):
+# ==================================================
+# SAFE SERIALIZER
+# ==================================================
+
+def serialize(obj):
     """
-    Always returns JSON-safe dict or list.
-    Never returns string.
+    Converts dataclasses into JSON safely.
     """
 
     if obj is None:
         return None
 
-    # Pydantic v2
-    if hasattr(obj, "model_dump"):
-        return obj.model_dump()
+    if is_dataclass(obj):
+        return asdict(obj)
 
-    # Pydantic v1
-    if hasattr(obj, "dict"):
-        return obj.dict()
+    if isinstance(obj, list):
 
-    # Dataclass / normal object
-    if hasattr(obj, "__dict__"):
-        return obj.__dict__
+        result = []
 
-    # LAST RESORT: return raw object (NOT string)
+        for item in obj:
+
+            if is_dataclass(item):
+                result.append(asdict(item))
+            else:
+                result.append(item)
+
+        return result
+
+    if isinstance(obj, dict):
+        return obj
+
     return obj
 
-# =========================
-# PLAN TRIP ENDPOINT
-# =========================
+
+# ==================================================
+# PLAN TRIP
+# ==================================================
+
 @app.post("/plan-trip")
 def plan_trip(request: TripRequest):
 
     response = controller.plan_trip(request)
 
     return {
+
+        "source": request.source,
+
+        "destination": request.destination,
+
         "route": response.shortest_path,
-        "total_distance": response.total_distance,
+
+        "distance": response.total_distance,
+
         "alternative_routes": response.alternative_routes,
+
         "status": response.status,
+
         "message": response.message,
 
-        # SAFE SERIALIZATION (FIXED)
-        "metrics": safe_serialize(response.metrics),
-        "budget": safe_serialize(response.budget)
+        "explanation": response.explanation,
+
+        "metrics": serialize(response.metrics),
+
+        "budget": serialize(response.budget)
+
     }
+
+
+# ==================================================
+# HISTORY
+# ==================================================
+
 @app.get("/history")
-def get_history():
-    return controller.repo.get_all_trips()
+def history():
+
+    return controller.get_trip_history()
+
+
+# ==================================================
+# ANALYTICS
+# ==================================================
+
+@app.get("/analytics")
+def analytics():
+
+    return {
+
+        "total_trips": controller.get_total_trips(),
+
+        "average_distance": controller.get_average_distance(),
+
+        "successful_trips": controller.get_successful_trips(),
+
+        "budget_exceeded": controller.get_budget_exceeded()
+
+    }
+
+
+# ==================================================
+# CLEAR HISTORY
+# ==================================================
+
+@app.delete("/history")
+def clear_history():
+
+    controller.clear_history()
+
+    return {
+
+        "status": "SUCCESS",
+
+        "message": "Trip history cleared successfully."
+
+    }

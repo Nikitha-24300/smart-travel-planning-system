@@ -1,5 +1,6 @@
-import streamlit as st
+import pandas as pd
 import requests
+import streamlit as st
 
 API_URL = "http://127.0.0.1:8000/history"
 
@@ -7,39 +8,71 @@ API_URL = "http://127.0.0.1:8000/history"
 def show_history():
 
     st.title("📜 Trip History")
+    st.caption("View all previously planned trips.")
 
     try:
-        res = requests.get(API_URL, timeout=10)
 
-        if res.status_code != 200:
-            st.error("Failed to fetch history")
+        response = requests.get(API_URL, timeout=10)
+
+        if response.status_code != 200:
+            st.error("Unable to fetch trip history.")
             return
 
-        data = res.json()
+        trips = response.json()
 
-        if not data:
-            st.info("No trips found yet.")
+        if not trips:
+            st.info("No trips planned yet.")
             return
 
-        st.success(f"Total Trips: {len(data)}")
+        df = pd.DataFrame(trips)
 
-        for i, trip in enumerate(data, 1):
+        if "route" in df.columns:
+            df["route"] = df["route"].apply(
+                lambda x: " ➜ ".join(x) if isinstance(x, list) else x
+            )
 
-            with st.container():
+        st.metric("Total Trips", len(df))
 
-                st.markdown("---")
+        st.markdown("---")
 
-                st.subheader(f"Trip {i}")
+        col1, col2 = st.columns(2)
 
-                col1, col2, col3 = st.columns(3)
+        with col1:
+            status_filter = st.selectbox(
+                "Filter by Status",
+                ["All"] + sorted(df["status"].unique().tolist())
+            )
 
-                col1.metric("Source", trip.get("source"))
-                col2.metric("Destination", trip.get("destination"))
-                col3.metric("Status", trip.get("status"))
+        with col2:
+            preference_filter = st.selectbox(
+                "Filter by Preference",
+                ["All"] + sorted(df["preference"].unique().tolist())
+            )
 
-                st.write("**Route:**", " → ".join(trip.get("route", [])))
-                st.write(f"Distance: {trip.get('distance')} km")
-                st.write(f"Preference: {trip.get('preference')}")
+        filtered_df = df.copy()
+
+        if status_filter != "All":
+            filtered_df = filtered_df[
+                filtered_df["status"] == status_filter
+            ]
+
+        if preference_filter != "All":
+            filtered_df = filtered_df[
+                filtered_df["preference"] == preference_filter
+            ]
+
+        st.dataframe(
+            filtered_df,
+            width="stretch",
+            hide_index=True
+        )
+
+        st.download_button(
+            label="📥 Download History (CSV)",
+            data=filtered_df.to_csv(index=False),
+            file_name="trip_history.csv",
+            mime="text/csv"
+        )
 
     except Exception as e:
-        st.error(f"API Error: {str(e)}")
+        st.error(f"API Error : {e}")

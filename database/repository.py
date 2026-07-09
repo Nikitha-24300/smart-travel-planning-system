@@ -1,3 +1,12 @@
+"""
+==================================================
+Smart Travel Planning System
+Trip Repository
+Version : 3.0
+Author  : Nikki
+==================================================
+"""
+
 import sqlite3
 from pathlib import Path
 
@@ -9,9 +18,19 @@ class TripRepository:
         self.db_path = Path("travel.db")
         self._create_table()
 
+    # =====================================================
+    # DATABASE CONNECTION
+    # =====================================================
+
     def _connect(self):
 
-        return sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
+
+    # =====================================================
+    # CREATE TABLE
+    # =====================================================
 
     def _create_table(self):
 
@@ -19,71 +38,210 @@ class TripRepository:
         cursor = conn.cursor()
 
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS trips (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                source TEXT,
-                destination TEXT,
-                route TEXT,
-                total_distance REAL,
-                preference TEXT,
-                status TEXT
-            )
+        CREATE TABLE IF NOT EXISTS trips(
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            source TEXT NOT NULL,
+
+            destination TEXT NOT NULL,
+
+            route TEXT NOT NULL,
+
+            total_distance REAL,
+
+            preference TEXT,
+
+            transport_mode TEXT,
+
+            status TEXT,
+
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+        )
         """)
 
         conn.commit()
         conn.close()
 
-    def save_trip(self, trip_data: dict):
+    # =====================================================
+    # SAVE TRIP
+    # =====================================================
+
+    def save_trip(self, trip):
 
         conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute("""
-            INSERT INTO trips (
-                source,
-                destination,
-                route,
-                total_distance,
-                preference,
-                status
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
+
+        INSERT INTO trips(
+
+            source,
+
+            destination,
+
+            route,
+
+            total_distance,
+
+            preference,
+
+            transport_mode,
+
+            status
+
+        )
+
+        VALUES(?,?,?,?,?,?,?)
+
         """, (
-            trip_data["source"],
-            trip_data["destination"],
-            " -> ".join(trip_data["route"]),
-            trip_data["total_distance"],
-            trip_data["preference"],
-            trip_data["status"]
+
+            trip["source"],
+
+            trip["destination"],
+
+            " -> ".join(trip["route"]),
+
+            trip["total_distance"],
+
+            trip["preference"],
+
+            trip["transport_mode"],
+
+            trip["status"]
+
         ))
 
         conn.commit()
         conn.close()
 
+    # =====================================================
+    # GET HISTORY
+    # =====================================================
+
     def get_all_trips(self):
 
         conn = self._connect()
-        cursor = conn.cursor()
 
-        cursor.execute("""
-        SELECT source, destination, route, total_distance, preference, status
+        rows = conn.execute("""
+
+        SELECT *
+
         FROM trips
-        ORDER BY id DESC
-    """)
 
-        rows = cursor.fetchall()
+        ORDER BY id DESC
+
+        """).fetchall()
+
         conn.close()
 
         trips = []
 
-        for r in rows:
+        for row in rows:
+
             trips.append({
-                "source": r[0],
-                "destination": r[1],
-                "route": r[2].split(" -> ") if r[2] else [],
-                "distance": r[3],
-                "preference": r[4],
-                "status": r[5]
+
+                "id": row["id"],
+
+                "source": row["source"],
+
+                "destination": row["destination"],
+
+                "route": row["route"].split(" -> "),
+
+                "distance": row["total_distance"],
+
+                "preference": row["preference"],
+
+                "transport_mode": row["transport_mode"],
+
+                "status": row["status"],
+
+                "created_at": row["created_at"]
+
             })
 
         return trips
+
+    # =====================================================
+    # ANALYTICS
+    # =====================================================
+
+    def total_trips(self):
+
+        conn = self._connect()
+
+        count = conn.execute(
+
+            "SELECT COUNT(*) FROM trips"
+
+        ).fetchone()[0]
+
+        conn.close()
+
+        return count
+
+    def average_distance(self):
+
+        conn = self._connect()
+
+        avg = conn.execute(
+
+            "SELECT AVG(total_distance) FROM trips"
+
+        ).fetchone()[0]
+
+        conn.close()
+
+        return round(avg or 0, 2)
+
+    def successful_trips(self):
+
+        conn = self._connect()
+
+        count = conn.execute("""
+
+        SELECT COUNT(*)
+
+        FROM trips
+
+        WHERE status='SUCCESS'
+
+        """).fetchone()[0]
+
+        conn.close()
+
+        return count
+
+    def budget_exceeded(self):
+
+        conn = self._connect()
+
+        count = conn.execute("""
+
+        SELECT COUNT(*)
+
+        FROM trips
+
+        WHERE status='BUDGET_EXCEEDED'
+
+        """).fetchone()[0]
+
+        conn.close()
+
+        return count
+
+    # =====================================================
+    # DELETE HISTORY
+    # =====================================================
+
+    def clear_history(self):
+
+        conn = self._connect()
+
+        conn.execute("DELETE FROM trips")
+
+        conn.commit()
+
+        conn.close()

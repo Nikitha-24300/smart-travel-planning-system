@@ -6,49 +6,63 @@ class Dijkstra:
     def __init__(self, graph):
         self.graph = graph
 
-    def find_shortest_path(self, start, end):
+    def find_path(self, start, end, weight="distance"):
 
         distances = {
-            city: float("inf") for city in self.graph
+            city: float("inf")
+            for city in self.graph
         }
 
         previous = {
-            city: None for city in self.graph
+            city: None
+            for city in self.graph
         }
 
         distances[start] = 0
 
-        priority_queue = [(0, start)]
+        queue = [(0, start)]
 
-        while priority_queue:
+        while queue:
 
-            current_distance, current_city = heapq.heappop(priority_queue)
+            current_cost, current_city = heapq.heappop(queue)
 
             if current_city == end:
                 break
 
-            for edge in self.graph[current_city]:
+            if current_cost > distances[current_city]:
+                continue
 
-                neighbor = edge.destination
-                distance = edge.distance
+            for neighbor, edge_data in self.graph[current_city]:
 
-                new_distance = current_distance + distance
+                edge_weight = edge_data.get(weight, 1)
 
-                if new_distance < distances[neighbor]:
+                new_cost = current_cost + edge_weight
 
-                    distances[neighbor] = new_distance
+                if new_cost < distances[neighbor]:
+
+                    distances[neighbor] = new_cost
+
                     previous[neighbor] = current_city
 
                     heapq.heappush(
-                        priority_queue,
-                        (new_distance, neighbor)
+                        queue,
+                        (
+                            new_cost,
+                            neighbor
+                        )
                     )
 
+        if distances[end] == float("inf"):
+            return [], float("inf")
+
         path = []
+
         city = end
 
-        while city:
+        while city is not None:
+
             path.insert(0, city)
+
             city = previous[city]
 
         return path, distances[end]
