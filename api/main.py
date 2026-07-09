@@ -19,11 +19,15 @@ app = FastAPI(
 )
 
 controller = ApplicationController()
+#controller = None
 
 
 # ==================================================
 # HEALTH CHECK
 # ==================================================
+'''@app.get("/")
+def root():
+    return {"message": "API Running"}'''
 
 @app.get("/health")
 def health():
